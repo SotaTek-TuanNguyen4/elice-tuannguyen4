@@ -11,7 +11,7 @@ export const UploadFileButton: React.FC = () => {
   const clickUploadFileButton = () => {
     const fileUploadElement = document.getElementById('fileUpload')
     if (fileUploadElement) {
-      fileUploadElement.click()
+      fileUploadElement.click();
     }
   }
 
