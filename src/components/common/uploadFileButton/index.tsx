@@ -1,11 +1,23 @@
 import styled from 'styled-components';
 import { LuArrowUpFromLine } from "react-icons/lu";
+import { useHandleZipFile } from '@/hooks/useHandleZipFile';
+import { useAppDispatch } from '@/store/hooks/useStoreHooks';
+import { FilesSystem } from "@/types/files"
+import { saveFiles } from '@/store/filesSystem/filesSystemSlice';
 
 export const UploadFileButton: React.FC = () => {
+  const { extractFilesFromZip } = useHandleZipFile()
+  const dispatch = useAppDispatch();
 
   const handleUploadZipFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const zipFile = event.target.files?.[0];
     if (!zipFile) return;
+
+    extractFilesFromZip(zipFile).then((data: FilesSystem[] | null) => {
+      if (data) {
+        dispatch(saveFiles({ files: data, rootFolderName: zipFile.name }));
+      }
+    });
   };
 
   const clickUploadFileButton = () => {

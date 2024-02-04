@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { AddFileButton } from '@/components/common/addFileButton';
 import { AddFolderButton } from '@/components/common/addFolderButton';
 import { UploadFileButton } from '@/components/common/uploadFileButton';
+import { DownloadFileButton } from '@/components/common/downloadFileButton';
 
 export const FilesTreeOperation: React.FC = () => {
   return (
@@ -9,6 +10,7 @@ export const FilesTreeOperation: React.FC = () => {
       <AddFileButton />
       <AddFolderButton />
       <UploadFileButton />
+      <DownloadFileButton />
     </FilesTreeOperationContainer>
   )
 }

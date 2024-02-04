@@ -15,9 +15,12 @@ const rootReducer: Reducer = (state: ReturnType<typeof store.getState>, action: 
   return combinedReducer(state, action)
 }
 
-
 export const store = configureStore({
-  reducer: rootReducer
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false
+    }),
 })
 
 export type RootState = ReturnType<typeof store.getState>

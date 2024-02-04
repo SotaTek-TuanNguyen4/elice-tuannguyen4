@@ -1,1 +1,1 @@
-export type FilesSystem = { fileName: string, rawData: string, dataText: string }
+export type FilesSystem = { fileName: string, rawData: string, dataText: string, arrayBufferFile: ArrayBuffer }
