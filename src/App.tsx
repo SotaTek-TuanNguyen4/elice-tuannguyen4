@@ -1,10 +1,13 @@
+import BuildEditor from "@/pages"
+import GlobalStyle from "@/config/globalStyles"
 
 function App() {
 
   return (
-    <div>
-      Elice frontend
-    </div>
+    <>
+      <GlobalStyle />
+      <BuildEditor />
+    </>
   )
 }
 
