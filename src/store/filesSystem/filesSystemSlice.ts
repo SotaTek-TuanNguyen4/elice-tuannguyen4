@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { FilesSystem } from "@/types/files"
+import { FilesSystem } from "@/types"
 
 type fileSystemState = {
   files: FilesSystem[];

@@ -1,7 +1,7 @@
 import { filesSystemSelectors } from "@/store/filesSystem/filesSystemSelector";
 import { useAppSelector } from "@/store/hooks/useStoreHooks";
 import styled from "styled-components";
-import { FilesSystem } from "@/types/files";
+import { FilesSystem } from "@/types";
 
 export const FilesTree: React.FC = () => {
   const rootFilename = useAppSelector(

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { LuArrowUpFromLine } from "react-icons/lu";
 import { useHandleZipFile } from '@/hooks/useHandleZipFile';
 import { useAppDispatch } from '@/store/hooks/useStoreHooks';
-import { FilesSystem } from "@/types/files"
+import { FilesSystem } from "@/types"
 import { saveFiles } from '@/store/filesSystem/filesSystemSlice';
 
 export const UploadFileButton: React.FC = () => {
