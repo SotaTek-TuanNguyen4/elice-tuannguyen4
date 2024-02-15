@@ -1,23 +1,29 @@
 import JSZip from 'jszip';
-import { FilesSystem } from "@/types/files"
+import { FilesSystem } from "@/types"
 import * as FileSaver from "file-saver"
+import { getFileName } from '@/utils';
 
 export const useHandleZipFile = () => {
 
   const getZipFiles = async (zipData: JSZip): Promise<FilesSystem[]> => {
     let filesSystem: FilesSystem[] = [];
     try {
-      const fileDataPromise = Object.keys(zipData.files).map(async (fileName) => {
-        const file = zipData.files[fileName];
+      const fileDataPromise = Object.keys(zipData.files).map(async (item) => {
+        const file = zipData.files[item];
         const arrayBufferFile = await file.async('arraybuffer');
         return file.async('string').then((value) => ({
-          fileName: file.name,
-          rawData: JSON.stringify(file),
-          dataText: value,
-          arrayBufferFile
+          fileName: getFileName(file.name),
+          pathName: file.name,
+          rawData: JSON.parse(JSON.stringify(file)),
+          contentText: value,
+          arrayBufferFile,
+          isExpand: true,
+          isFolder: file.dir,
+          isBinary: false
         }));
       });
       filesSystem = await Promise.all(fileDataPromise);
+      filesSystem.sort((file1: FilesSystem, file2: FilesSystem) => file1.pathName.localeCompare(file2.pathName))
     } catch (error) {
       console.error('Read files error');
     }
@@ -38,8 +44,8 @@ export const useHandleZipFile = () => {
 
   const convertFilesSystemToZip = async (filesSystem: FilesSystem[]) => {
     const zip = new JSZip();
-    filesSystem.forEach(async ({ fileName, arrayBufferFile }) => {
-      zip.file(fileName, arrayBufferFile);
+    filesSystem.forEach(async ({ pathName, contentText }) => {
+      zip.file(pathName, contentText);
     });
     const zipBlob = await zip.generateAsync({ type: 'blob' });
   

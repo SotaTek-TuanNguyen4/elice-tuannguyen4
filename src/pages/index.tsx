@@ -31,7 +31,7 @@ const FilesTreeArea = styled.div`
   background-color: #1e1e1e;
   border-right: 1px solid #333;
   color: #d4d4d4;
-  min-width: 200px;
+  min-width: 300px;
 `;
 
 const EditorArea = styled.div`

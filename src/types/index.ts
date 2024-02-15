@@ -1,15 +1,12 @@
 type FilesSystem = {
   fileName: string;
+  pathName: string;
   rawData: string;
   contentText: string;
   arrayBufferFile: ArrayBuffer;
-};
-
-type TreeNode = {
-  label: string;
-  path: string;
+  isExpand: boolean;
   isFolder: boolean;
-  children?: TreeNode[];
+  isBinary: boolean;
 };
 
-export type { FilesSystem, TreeNode };
+export type { FilesSystem };
