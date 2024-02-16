@@ -1,12 +1,12 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 import { LuArrowUpFromLine } from "react-icons/lu";
-import { useHandleZipFile } from '@/hooks/useHandleZipFile';
-import { useAppDispatch } from '@/store/hooks/useStoreHooks';
-import { FilesSystem } from "@/types"
-import { saveFiles } from '@/store/filesSystem/filesSystemSlice';
+import { useHandleZipFile } from "@/hooks/useHandleZipFile";
+import { useAppDispatch } from "@/store/hooks/useStoreHooks";
+import { FilesSystem } from "@/types";
+import { saveFiles } from "@/store/filesSystem/filesSystemSlice";
 
 export const UploadFileButton: React.FC = () => {
-  const { extractFilesFromZip } = useHandleZipFile()
+  const { extractFilesFromZip } = useHandleZipFile();
   const dispatch = useAppDispatch();
 
   const handleUploadZipFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,27 +21,30 @@ export const UploadFileButton: React.FC = () => {
   };
 
   const clickUploadFileButton = () => {
-    const fileUploadElement = document.getElementById('fileUpload')
+    const fileUploadElement = document.getElementById("fileUpload");
     if (fileUploadElement) {
       fileUploadElement.click();
     }
-  }
+  };
 
   return (
     <>
-      <UploadFileButtonContainer title="Upload Zip File" onClick={clickUploadFileButton}>
-        <LuArrowUpFromLine size='1rem' color="#d4d4d4" />
+      <UploadFileButtonContainer
+        title="Upload Zip File"
+        onClick={clickUploadFileButton}
+      >
+        <LuArrowUpFromLine size="1rem" color="#d4d4d4" />
       </UploadFileButtonContainer>
       <input
         type="file"
-        onChange={(e) => handleUploadZipFile(e)}
+        onChange={handleUploadZipFile}
         accept=".zip"
         id="fileUpload"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
     </>
-  )
-}
+  );
+};
 
 const UploadFileButtonContainer = styled.button`
   width: 30px;
