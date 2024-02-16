@@ -41,6 +41,6 @@ const DownloadFileButtonContainer = styled.button<{ disabled: boolean }>`
   background-color: transparent;
   border-radius: 3px;
   border: 1px solid #d4d4d4;
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  margin: 0 10px;
 `;
