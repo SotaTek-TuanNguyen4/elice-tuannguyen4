@@ -4,10 +4,12 @@ import styled from "styled-components";
 import { FilesSystem } from "@/types";
 import { FolderNode } from "@/components/filesTree/FolderNode";
 import { FileNode } from "@/components/filesTree/FileNode";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { cloneFilesTree } from "@/utils";
 import { useHandleZipFile } from "@/hooks/useHandleZipFile";
 import { saveFiles } from "@/store/filesSystem/filesSystemSlice";
+import { LoadingComponent } from "@/components/common/loading";
+import { EditorContext } from "@/contexts/EditorContext";
 
 export const FilesTree: React.FC = () => {
   const filesTree: FilesSystem[] = useAppSelector(
@@ -16,12 +18,13 @@ export const FilesTree: React.FC = () => {
   const [filesTreeDisplay, setFilesTreeDisplay] = useState<FilesSystem[]>([]);
   const { extractFilesFromZip } = useHandleZipFile();
   const dispatch = useAppDispatch();
-  const [hasFilesDrop, setHasFilesDrop] = useState(false);
+  const [isDropFileOver, setIsDropFileOver] = useState(false);
+  const { isReadFileLoading, setIsReadFileLoading } = useContext(EditorContext);
 
   useEffect(() => {
     setFilesTreeDisplay(filesTree);
     if (filesTree.length > 0) {
-      setHasFilesDrop(true);
+      setIsDropFileOver(true);
     }
   }, [filesTree]);
 
@@ -76,13 +79,15 @@ export const FilesTree: React.FC = () => {
     event.preventDefault();
     const zipFile = event.dataTransfer.files[0];
     if (!zipFile) return;
-
-    extractFilesFromZip(zipFile).then((data: FilesSystem[] | null) => {
-      if (data) {
-        dispatch(saveFiles({ files: data, rootFolderName: zipFile.name }));
-        setHasFilesDrop(true);
-      }
-    });
+    setIsDropFileOver(true);
+    setIsReadFileLoading(true);
+    extractFilesFromZip(zipFile)
+      .then((data: FilesSystem[] | null) => {
+        if (data) {
+          dispatch(saveFiles({ files: data, rootFolderName: zipFile.name }));
+        }
+      })
+      .finally(() => setIsReadFileLoading(false));
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -91,30 +96,36 @@ export const FilesTree: React.FC = () => {
 
   return (
     <Container>
-      {!hasFilesDrop ? (
-        <DragDropFileCointer
-          onDrop={handleDragDropFile}
-          onDragOver={handleDragOver}
-        >
-          Drag and drop file here
-        </DragDropFileCointer>
+      {isReadFileLoading ? (
+        <LoadingComponent />
       ) : (
-        <FilesTreeContainer>
-          {filesTreeDisplay.map((item: FilesSystem) => {
-            if (item.isFolder) {
-              return (
-                <FolderNode
-                  fileSystem={item}
-                  key={item.pathName}
-                  handleToggleExpand={handleToggleExpandFilesTree}
-                />
-              );
-            } else if (item.isExpand) {
-              return <FileNode fileSystem={item} key={item.pathName} />;
-            }
-            return;
-          })}
-        </FilesTreeContainer>
+        <>
+          {!isDropFileOver ? (
+            <DragDropFileCointer
+              onDrop={handleDragDropFile}
+              onDragOver={handleDragOver}
+            >
+              Drag and drop file here
+            </DragDropFileCointer>
+          ) : (
+            <FilesTreeContainer>
+              {filesTreeDisplay.map((item: FilesSystem) => {
+                if (item.isFolder) {
+                  return (
+                    <FolderNode
+                      fileSystem={item}
+                      key={item.pathName}
+                      handleToggleExpand={handleToggleExpandFilesTree}
+                    />
+                  );
+                } else if (item.isExpand) {
+                  return <FileNode fileSystem={item} key={item.pathName} />;
+                }
+                return;
+              })}
+            </FilesTreeContainer>
+          )}
+        </>
       )}
     </Container>
   );
@@ -124,9 +135,10 @@ const Container = styled.div`
   display: block;
   width: 100%;
   height: 100%;
+  position: relative;
 `;
 
-const FilesTreeContainer = styled.div`
+const FilesTreeContainer = styled(Container)`
   padding: 10px;
 `;
 

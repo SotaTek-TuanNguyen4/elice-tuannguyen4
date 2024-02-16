@@ -3,21 +3,23 @@ import { MonacoEditor } from "@/components/editor"
 import { FilesTree } from "@/components/filesTree"
 import { FilesTreeOperation } from "@/components/filesTreeOperation"
 import { OpeningTabs } from "@/components/openingTabs"
+import { EditorContextProvider } from "@/contexts/EditorContext"
 import styled from "styled-components"
-
 
 function BuildEditor () {
   return (
-    <PageLayout>
-      <FilesTreeArea>
-        <FilesTreeOperation />
-        <FilesTree />
-      </FilesTreeArea>
-      <EditorArea>
-        <OpeningTabs />
-        <MonacoEditor />
-      </EditorArea>
-    </PageLayout>
+    <EditorContextProvider>
+      <PageLayout>
+        <FilesTreeArea>
+          <FilesTreeOperation />
+          <FilesTree />
+        </FilesTreeArea>
+        <EditorArea>
+          <OpeningTabs />
+          <MonacoEditor />
+        </EditorArea>
+      </PageLayout>
+    </EditorContextProvider>
   )
 }
 

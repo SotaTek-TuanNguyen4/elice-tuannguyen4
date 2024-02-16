@@ -4,20 +4,25 @@ import { useHandleZipFile } from "@/hooks/useHandleZipFile";
 import { useAppDispatch } from "@/store/hooks/useStoreHooks";
 import { FilesSystem } from "@/types";
 import { saveFiles } from "@/store/filesSystem/filesSystemSlice";
+import { EditorContext } from "@/contexts/EditorContext";
+import { useContext } from "react";
 
 export const UploadFileButton: React.FC = () => {
   const { extractFilesFromZip } = useHandleZipFile();
   const dispatch = useAppDispatch();
+  const { setIsReadFileLoading } = useContext(EditorContext);
 
   const handleUploadZipFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const zipFile = event.target.files?.[0];
     if (!zipFile) return;
-
-    extractFilesFromZip(zipFile).then((data: FilesSystem[] | null) => {
-      if (data) {
-        dispatch(saveFiles({ files: data, rootFolderName: zipFile.name }));
-      }
-    });
+    setIsReadFileLoading(true);
+    extractFilesFromZip(zipFile)
+      .then((data: FilesSystem[] | null) => {
+        if (data) {
+          dispatch(saveFiles({ files: data, rootFolderName: zipFile.name }));
+        }
+      })
+      .finally(() => setIsReadFileLoading(false));
   };
 
   const clickUploadFileButton = () => {
