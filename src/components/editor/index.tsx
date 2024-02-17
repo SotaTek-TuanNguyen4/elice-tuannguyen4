@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useContext } from "react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/useStoreHooks";
@@ -6,12 +6,12 @@ import { PreDefineLanguages } from "@/constants";
 import { filesSystemSelectors } from "@/store/filesSystem/filesSystemSelector";
 import type { FilesSystem } from "@/types";
 import { updateFile } from "@/store/filesSystem/filesSystemSlice";
+import { EditorContext } from "@/contexts/EditorContext";
 
 type LanguageExtention = keyof typeof PreDefineLanguages;
 
 export const MonacoEditor: React.FC = () => {
-  const [editor, setEditor] =
-    useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const { editor, setEditor } = useContext(EditorContext);
   const monacoEl = useRef(null);
   const dispatch = useAppDispatch();
   const tabsOpened: FilesSystem[] = useAppSelector(
@@ -37,10 +37,9 @@ export const MonacoEditor: React.FC = () => {
 
         editerInstance.addCommand(
           monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-          async () => {
+          () => {
             const fileContent = editerInstance.getValue();
-            await dispatch(updateFile(fileContent));
-            alert("File Saved");
+            dispatch(updateFile(fileContent));
           }
         );
 
@@ -62,6 +61,10 @@ export const MonacoEditor: React.FC = () => {
       if (model) {
         monaco.editor.setModelLanguage(model, initLanguage);
       }
+    }
+
+    if (!fileOpened && editor) {
+      editor.setValue("");
     }
   }, [fileOpened]);
 

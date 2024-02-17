@@ -1,27 +1,45 @@
 import styled from "styled-components";
 import type { FilesSystem } from "@/types";
-import { useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/useStoreHooks";
 import { filesSystemSelectors } from "@/store/filesSystem/filesSystemSelector";
-import { closeFile } from "@/store/filesSystem/filesSystemSlice";
+import { closeFile, updateFile } from "@/store/filesSystem/filesSystemSlice";
 import { FiX } from "react-icons/fi";
 import { changeFileActive } from "@/store/filesSystem/filesSystemSlice";
+import { EditorContext } from "@/contexts/EditorContext";
+import { ConfirmCloseFileModal } from "@/components/modal/ConfirmCloseFileModal";
 
 interface OpenTabProps {
   file: FilesSystem;
 }
 
 export const OpenTab: React.FC<OpenTabProps> = ({ file }: OpenTabProps) => {
+  const { editor } = useContext(EditorContext);
   const dispatch = useAppDispatch();
   const pathActiveTab: string = useAppSelector(
     filesSystemSelectors.selectFilePathActive
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const isActiveTab = useMemo(() => {
+    return file.pathName === pathActiveTab;
+  }, [file.pathName, pathActiveTab]);
 
   const handleCloseTab = (
     filePath: string,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    dispatch(closeFile(filePath));
+    if (!isActiveTab) {
+      dispatch(closeFile(filePath));
+    } else {
+      if (!editor) return;
+      const fileContent = editor.getValue();
+      if (fileContent === file.contentText) {
+        dispatch(closeFile(filePath));
+      } else {
+        setIsModalOpen(true);
+      }
+    }
     event.stopPropagation();
   };
 
@@ -29,9 +47,18 @@ export const OpenTab: React.FC<OpenTabProps> = ({ file }: OpenTabProps) => {
     dispatch(changeFileActive(filePath));
   };
 
-  const isActiveTab = useMemo(() => {
-    return file.pathName === pathActiveTab;
-  }, [file.pathName, pathActiveTab]);
+  const handleClickSaveFile = async () => {
+    if (!editor) return;
+    const fileContent = editor.getValue();
+    await dispatch(updateFile(fileContent));
+    await dispatch(closeFile(file.pathName));
+    setIsModalOpen(false);
+  };
+
+  const handleClickDontSaveFile = () => {
+    dispatch(closeFile(file.pathName));
+    setIsModalOpen(false);
+  };
 
   return (
     <OpenTabContainer
@@ -49,6 +76,12 @@ export const OpenTab: React.FC<OpenTabProps> = ({ file }: OpenTabProps) => {
       >
         <FiX size="1rem" color="#FFF" />
       </CloseButton>
+      <ConfirmCloseFileModal
+        isOpen={isModalOpen}
+        onClose={setIsModalOpen}
+        onClickYes={handleClickSaveFile}
+        onClickNo={handleClickDontSaveFile}
+      />
     </OpenTabContainer>
   );
 };
