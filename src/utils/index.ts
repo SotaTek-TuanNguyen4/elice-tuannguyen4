@@ -7,7 +7,7 @@ const getFileName = (filePath: string): string => {
   }
   const lastSlashIndex = filePath.lastIndexOf("/");
   return filePath.substring(lastSlashIndex + 1);
-}
+};
 
 function cloneDeepObject<T>(object: T): T {
   return JSON.parse(JSON.stringify(object)) as T;
@@ -15,10 +15,10 @@ function cloneDeepObject<T>(object: T): T {
 
 const cloneFilesTree = (filesTreeInput: FilesSystem[]) => {
   return cloneDeepObject(filesTreeInput);
-}
+};
 
 const cloneFileSystem = (fileSystem: FilesSystem) => {
   return cloneDeepObject(fileSystem);
-}
+};
 
-export { getFileName, cloneFilesTree, cloneFileSystem }
+export { getFileName, cloneFilesTree, cloneFileSystem, cloneDeepObject };

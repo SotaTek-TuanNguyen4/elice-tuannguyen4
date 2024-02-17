@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { FilesSystem } from "@/types";
-import { cloneFileSystem } from "@/utils";
+import { cloneFileSystem, cloneDeepObject } from "@/utils";
 
 type fileSystemState = {
   files: FilesSystem[];
@@ -93,6 +93,38 @@ export const filesSystemSlice = createSlice({
         state.files[currentFileFocusIndex].isFocus = true;
       }
     },
+    deleteFileOrFolder: (state) => {
+      const currentFileFocusIndex = state.files.findIndex(
+        (file) => file.isFocus === true
+      );
+      if (currentFileFocusIndex === -1) return;
+      const currentFileFocus: FilesSystem = state.files[currentFileFocusIndex];
+
+      if (currentFileFocus.isFolder) {
+        const folderAndSubFiles = state.files.filter((file: FilesSystem) => file.pathName.startsWith(currentFileFocus.pathName))
+        state.files.splice(currentFileFocusIndex, folderAndSubFiles.length)
+
+        const cloneFolderAndSubFiles = cloneDeepObject(folderAndSubFiles);
+        cloneFolderAndSubFiles.shift();
+        cloneFolderAndSubFiles.forEach((file: FilesSystem) => {
+          const fileTabOpenedIndex = state.fileTabs.findIndex(
+            (item: FilesSystem) => item.pathName === file.pathName
+          );
+          if (fileTabOpenedIndex !== -1) {
+            state.fileTabs.splice(fileTabOpenedIndex, 1);
+          }
+        })
+      } else {
+        state.files.splice(currentFileFocusIndex, 1);
+
+        const fileTabOpenedIndex = state.fileTabs.findIndex(
+          (file) => file.pathName === currentFileFocus.pathName
+        );
+        if (fileTabOpenedIndex !== -1) {
+          state.fileTabs.splice(fileTabOpenedIndex, 1);
+        }
+      }
+    },
   },
 });
 
@@ -103,6 +135,7 @@ export const {
   closeFile,
   changeFileActive,
   updateFileFocus,
+  deleteFileOrFolder
 } = filesSystemSlice.actions;
 
 export default filesSystemSlice.reducer;
