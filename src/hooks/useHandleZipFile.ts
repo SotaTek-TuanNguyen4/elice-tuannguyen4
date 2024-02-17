@@ -19,7 +19,8 @@ export const useHandleZipFile = () => {
           arrayBufferFile,
           isExpand: true,
           isFolder: file.dir,
-          isBinary: false
+          isBinary: false,
+          isFocus: false
         }));
       });
       filesSystem = await Promise.all(fileDataPromise);

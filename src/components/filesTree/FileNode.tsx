@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FiFileText } from "react-icons/fi";
 import { useAppDispatch } from "@/store/hooks/useStoreHooks";
 import type { FilesSystem } from "@/types";
-import { openFile } from "@/store/filesSystem/filesSystemSlice";
+import { openFile, updateFileFocus } from "@/store/filesSystem/filesSystemSlice";
 
 interface FileNodeProps {
   fileSystem: FilesSystem;
@@ -16,12 +16,14 @@ export const FileNode: React.FC<FileNodeProps> = ({
   const space = splitFileName.length - 1;
 
   const handleOpenFile = () => {
+    dispatch(updateFileFocus(fileSystem.pathName));
     dispatch(openFile(fileSystem));
   };
 
   return (
     <FileBoxContainer
       style={{ paddingLeft: `${space * 20}px` }}
+      className={fileSystem.isFocus ? "focus" : ""}
       onClick={handleOpenFile}
     >
       <FiFileText style={{ marginLeft: "20px" }}></FiFileText>
@@ -38,6 +40,10 @@ export const FileBoxContainer = styled.div`
   height: 24px;
   width: 100%;
   cursor: pointer;
+  &.focus {
+    background: #3f3f3f;
+  }
+
   .file-name {
     font-size: 15px;
     overflow: hidden;

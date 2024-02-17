@@ -3,15 +3,15 @@ import styled from "styled-components";
 
 interface ChevronButtonProps {
   isExpand: boolean;
-  onclick: () => void;
+  onclick: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export const ChevronButton: React.FC<ChevronButtonProps> = ({
   isExpand,
   onclick,
 }: ChevronButtonProps) => {
-  const handleClick = () => {
-    onclick();
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    onclick(event);
   };
 
   return (

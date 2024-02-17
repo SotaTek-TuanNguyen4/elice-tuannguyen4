@@ -79,10 +79,30 @@ export const filesSystemSlice = createSlice({
       if (state.filePathActive === action.payload) return;
       state.filePathActive = action.payload;
     },
+    updateFileFocus: (state, action: PayloadAction<string>) => {
+      const prevFileFocusIndex = state.files.findIndex(
+        (file) => file.isFocus === true
+      );
+      if (prevFileFocusIndex !== -1) {
+        state.files[prevFileFocusIndex].isFocus = false;
+      }
+      const currentFileFocusIndex = state.files.findIndex(
+        (file) => file.pathName === action.payload
+      );
+      if (currentFileFocusIndex !== -1) {
+        state.files[currentFileFocusIndex].isFocus = true;
+      }
+    },
   },
 });
 
-export const { saveFiles, updateFile, openFile, closeFile, changeFileActive } =
-  filesSystemSlice.actions;
+export const {
+  saveFiles,
+  updateFile,
+  openFile,
+  closeFile,
+  changeFileActive,
+  updateFileFocus,
+} = filesSystemSlice.actions;
 
 export default filesSystemSlice.reducer;

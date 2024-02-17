@@ -7,6 +7,7 @@ type FilesSystem = {
   isExpand: boolean;
   isFolder: boolean;
   isBinary: boolean;
+  isFocus: boolean;
 };
 
 export type { FilesSystem };
