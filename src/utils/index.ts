@@ -51,6 +51,20 @@ const checkPathNameIsRootFolder = (
   );
 };
 
+const checkisTextFile = (buffer: ArrayBuffer): boolean => {
+  const view = new Uint8Array(buffer);
+  const length = Math.min(view.length, 1024);
+
+  for (let i = 0; i < length; i++) {
+    const byte = view[i];
+    if ((byte < 32 || byte > 126) && byte !== 10 && byte !== 13) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export {
   getFileName,
   cloneFilesTree,
@@ -58,4 +72,5 @@ export {
   cloneDeepObject,
   findCommonSubstring,
   checkPathNameIsRootFolder,
+  checkisTextFile
 };
