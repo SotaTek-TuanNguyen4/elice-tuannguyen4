@@ -32,9 +32,9 @@ export const filesSystemSlice = createSlice({
       const currentActiveTabIndex = state.fileTabs.findIndex(
         (tab) => tab.pathName === state.filePathActive
       );
-      if (currentActiveTabIndex !== -1) {
-        state.fileTabs[currentActiveTabIndex].contentText = action.payload;
-      }
+      if (currentActiveTabIndex === -1) return;
+      state.fileTabs[currentActiveTabIndex].contentText = action.payload;
+
       const currentFileActiveIndex = state.files.findIndex(
         (tab) => tab.pathName === state.filePathActive
       );
@@ -101,8 +101,10 @@ export const filesSystemSlice = createSlice({
       const currentFileFocus: FilesSystem = state.files[currentFileFocusIndex];
 
       if (currentFileFocus.isFolder) {
-        const folderAndSubFiles = state.files.filter((file: FilesSystem) => file.pathName.startsWith(currentFileFocus.pathName))
-        state.files.splice(currentFileFocusIndex, folderAndSubFiles.length)
+        const folderAndSubFiles = state.files.filter((file: FilesSystem) =>
+          file.pathName.startsWith(currentFileFocus.pathName)
+        );
+        state.files.splice(currentFileFocusIndex, folderAndSubFiles.length);
 
         const cloneFolderAndSubFiles = cloneDeepObject(folderAndSubFiles);
         cloneFolderAndSubFiles.shift();
@@ -113,7 +115,7 @@ export const filesSystemSlice = createSlice({
           if (fileTabOpenedIndex !== -1) {
             state.fileTabs.splice(fileTabOpenedIndex, 1);
           }
-        })
+        });
       } else {
         state.files.splice(currentFileFocusIndex, 1);
 
@@ -135,7 +137,7 @@ export const {
   closeFile,
   changeFileActive,
   updateFileFocus,
-  deleteFileOrFolder
+  deleteFileOrFolder,
 } = filesSystemSlice.actions;
 
 export default filesSystemSlice.reducer;
