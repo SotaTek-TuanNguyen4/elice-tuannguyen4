@@ -17,6 +17,106 @@ const initialState: fileSystemState = {
   filePathActive: null,
 };
 
+const handleUpdateFilesTree = (
+  state: fileSystemState,
+  newFolderFile: FilesSystem
+) => {
+  state.files.push(newFolderFile);
+  state.files.sort((file1: FilesSystem, file2: FilesSystem) =>
+    file1.pathName.localeCompare(file2.pathName)
+  );
+  state.fileTabs.push(newFolderFile);
+  state.filePathActive = newFolderFile.pathName;
+};
+
+const handleAddFolderFile = (
+  state: fileSystemState,
+  action: PayloadAction<{
+    hasRootFolder: boolean;
+    rootFolderName: string;
+    fileName: string;
+  }>,
+  isAddFolder: boolean
+) => {
+  const currentFileFocusIndex = state.files.findIndex(
+    (file) => file.isFocus === true
+  );
+  if (currentFileFocusIndex === -1) {
+    if (action.payload.hasRootFolder) {
+      const newFolderFile = {
+        fileName: action.payload.fileName,
+        pathName: isAddFolder
+          ? `${action.payload.rootFolderName}${action.payload.fileName}/`
+          : `${action.payload.rootFolderName}${action.payload.fileName}`,
+        rawData: "",
+        contentText: "",
+        arrayBufferFile: new ArrayBuffer(0),
+        isExpand: true,
+        isFolder: isAddFolder ? true : false,
+        isBinary: false,
+        isFocus: true,
+      };
+      handleUpdateFilesTree(state, newFolderFile);
+    } else {
+      const newFolderFile = {
+        fileName: action.payload.fileName,
+        pathName: isAddFolder
+          ? `${action.payload.fileName}/`
+          : action.payload.fileName,
+        rawData: "",
+        contentText: "",
+        arrayBufferFile: new ArrayBuffer(0),
+        isExpand: true,
+        isFolder: isAddFolder ? true : false,
+        isBinary: false,
+        isFocus: true,
+      };
+      handleUpdateFilesTree(state, newFolderFile);
+    }
+  } else {
+    state.files[currentFileFocusIndex].isFocus = false
+    if (state.files[currentFileFocusIndex].isFolder) {
+      const newFolderFile = {
+        fileName: action.payload.fileName,
+        pathName: isAddFolder
+          ? `${state.files[currentFileFocusIndex].pathName}${action.payload.fileName}/`
+          : `${state.files[currentFileFocusIndex].pathName}${action.payload.fileName}`,
+        rawData: "",
+        contentText: "",
+        arrayBufferFile: new ArrayBuffer(0),
+        isExpand: true,
+        isFolder: isAddFolder ? true : false,
+        isBinary: false,
+        isFocus: true,
+      };
+      handleUpdateFilesTree(state, newFolderFile);
+    } else {
+      const currentFile = state.files[currentFileFocusIndex];
+      const indexOfFileName = currentFile.pathName.indexOf(
+        currentFile.fileName
+      );
+      const parentFolderPathName = currentFile.pathName.substring(
+        0,
+        indexOfFileName
+      );
+      const newFolderFile = {
+        fileName: action.payload.fileName,
+        pathName: isAddFolder
+          ? `${parentFolderPathName}${action.payload.fileName}/`
+          : `${parentFolderPathName}${action.payload.fileName}`,
+        rawData: "",
+        contentText: "",
+        arrayBufferFile: new ArrayBuffer(0),
+        isExpand: true,
+        isFolder: isAddFolder ? true : false,
+        isBinary: false,
+        isFocus: true,
+      };
+      handleUpdateFilesTree(state, newFolderFile);
+    }
+  }
+};
+
 export const filesSystemSlice = createSlice({
   name: "filesSystem",
   initialState,
@@ -127,6 +227,28 @@ export const filesSystemSlice = createSlice({
         }
       }
     },
+    addFolder: (
+      state,
+      action: PayloadAction<{
+        hasRootFolder: boolean;
+        rootFolderName: string;
+        fileName: string;
+      }>
+    ) => {
+      const isAddFolder = true;
+      handleAddFolderFile(state, action, isAddFolder);
+    },
+    addFile: (
+      state,
+      action: PayloadAction<{
+        hasRootFolder: boolean;
+        rootFolderName: string;
+        fileName: string;
+      }>
+    ) => {
+      const isAddFolder = false;
+      handleAddFolderFile(state, action, isAddFolder);
+    },
   },
 });
 
@@ -138,6 +260,8 @@ export const {
   changeFileActive,
   updateFileFocus,
   deleteFileOrFolder,
+  addFolder,
+  addFile,
 } = filesSystemSlice.actions;
 
 export default filesSystemSlice.reducer;
