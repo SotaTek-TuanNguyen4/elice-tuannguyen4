@@ -153,6 +153,7 @@ export const filesSystemSlice = createSlice({
         return;
       }
       state.fileTabs.push(cloneFileSystem(action.payload));
+      state.filePathActive = action.payload.pathName;
     },
     closeFile: (state, action: PayloadAction<string>) => {
       if (state.filePathActive === action.payload) {
