@@ -74,7 +74,7 @@ const handleAddFolderFile = (
       handleUpdateFilesTree(state, newFolderFile);
     }
   } else {
-    state.files[currentFileFocusIndex].isFocus = false
+    state.files[currentFileFocusIndex].isFocus = false;
     if (state.files[currentFileFocusIndex].isFolder) {
       const newFolderFile = {
         fileName: action.payload.fileName,
@@ -144,8 +144,8 @@ export const filesSystemSlice = createSlice({
         state.files[currentFileActiveIndex].contentText = action.payload;
       }
     },
-    openFile: (state, action: PayloadAction<FilesSystem>) => {
-      const filePath = action.payload.pathName;
+    openFile: (state, action: PayloadAction<string>) => {
+      const filePath = action.payload;
       const fileOpened = state.fileTabs.find(
         (file) => file.pathName === filePath
       );
@@ -154,9 +154,15 @@ export const filesSystemSlice = createSlice({
         state.filePathActive = filePath;
         return;
       }
-      state.fileTabs.push(cloneFileSystem(action.payload));
-      if (state.filePathActive !== action.payload.pathName) {
-        state.filePathActive = action.payload.pathName;
+
+      const fileSystem = state.files.find((file) => file.pathName === filePath);
+      if (!fileSystem) {
+        return;
+      }
+
+      state.fileTabs.push(cloneFileSystem(fileSystem));
+      if (state.filePathActive !== action.payload) {
+        state.filePathActive = action.payload;
       }
     },
     closeFile: (state, action: PayloadAction<string>) => {

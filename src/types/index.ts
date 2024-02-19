@@ -10,4 +10,9 @@ type FilesSystem = {
   isFocus: boolean;
 };
 
-export type { FilesSystem };
+type TreeFolder = Omit<
+  FilesSystem,
+  "arrayBufferFile" | "rawData" | "contentText"
+>;
+
+export type { FilesSystem, TreeFolder };

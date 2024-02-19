@@ -1,4 +1,4 @@
-import type { FilesSystem } from "@/types";
+import type { TreeFolder } from "@/types";
 import { FileBoxContainer } from "@/components/filesTree/FileNode";
 import { FiFolder } from "react-icons/fi";
 import { ChevronButton } from "@/components/common/chevronButton";
@@ -6,7 +6,7 @@ import { useAppDispatch } from "@/store/hooks/useStoreHooks";
 import { updateFileFocus } from "@/store/filesSystem/filesSystemSlice";
 
 interface FolderNodeProps {
-  fileSystem: FilesSystem;
+  fileSystem: TreeFolder;
   handleToggleExpand: (filePath: string, isExpand: boolean) => void;
 }
 

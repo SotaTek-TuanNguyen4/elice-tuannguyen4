@@ -1,11 +1,11 @@
 import { filesSystemSelectors } from "@/store/filesSystem/filesSystemSelector";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/useStoreHooks";
 import styled from "styled-components";
-import { FilesSystem } from "@/types";
+import type { FilesSystem, TreeFolder } from "@/types";
 import { FolderNode } from "@/components/filesTree/FolderNode";
 import { FileNode } from "@/components/filesTree/FileNode";
 import { useState, useEffect, useContext } from "react";
-import { cloneFilesTree } from "@/utils";
+import { cloneDeepObject } from "@/utils";
 import { useHandleZipFile } from "@/hooks/useHandleZipFile";
 import { saveFiles } from "@/store/filesSystem/filesSystemSlice";
 import { LoadingComponent } from "@/components/common/loading";
@@ -15,14 +15,22 @@ export const FilesTree: React.FC = () => {
   const filesTree: FilesSystem[] = useAppSelector(
     filesSystemSelectors.selectFilesSystem
   );
-  const [filesTreeDisplay, setFilesTreeDisplay] = useState<FilesSystem[]>([]);
+  const [filesTreeDisplay, setFilesTreeDisplay] = useState<TreeFolder[]>([]);
   const { extractFilesFromZip } = useHandleZipFile();
   const dispatch = useAppDispatch();
   const [isDropFileOver, setIsDropFileOver] = useState(false);
   const { isReadFileLoading, setIsReadFileLoading } = useContext(EditorContext);
 
   useEffect(() => {
-    setFilesTreeDisplay(filesTree);
+    const newFilesTree: TreeFolder[] = filesTree.map((item) => ({
+      fileName: item.fileName,
+      pathName: item.pathName,
+      isFolder: item.isFolder,
+      isExpand: item.isExpand,
+      isBinary: item.isBinary,
+      isFocus: item.isFocus
+    }));
+    setFilesTreeDisplay(newFilesTree);
     if (filesTree.length > 0) {
       setIsDropFileOver(true);
     }
@@ -31,10 +39,10 @@ export const FilesTree: React.FC = () => {
   const handleCollapseFolderNode = (folderPath: string) => {
     const folderNode = checkFolderNodeExist(folderPath);
     if (!folderNode) return;
-    const cloneFilesTreeDisplay = cloneFilesTree(filesTreeDisplay);
+    const cloneFilesTreeDisplay = cloneDeepObject(filesTreeDisplay);
 
-    const filesTreeCollapse: FilesSystem[] = cloneFilesTreeDisplay.map(
-      (item: FilesSystem) => {
+    const filesTreeCollapse: TreeFolder[] = cloneFilesTreeDisplay.map(
+      (item: TreeFolder) => {
         if (item.pathName.startsWith(folderPath)) {
           item.isExpand = false;
         }
@@ -47,10 +55,10 @@ export const FilesTree: React.FC = () => {
   const handleExpandFolderNode = (folderPath: string) => {
     const folderNode = checkFolderNodeExist(folderPath);
     if (!folderNode) return;
-    const cloneFilesTreeDisplay = cloneFilesTree(filesTreeDisplay);
+    const cloneFilesTreeDisplay = cloneDeepObject(filesTreeDisplay);
 
-    const filesTreeExpand: FilesSystem[] = cloneFilesTreeDisplay.map(
-      (item: FilesSystem) => {
+    const filesTreeExpand: TreeFolder[] = cloneFilesTreeDisplay.map(
+      (item: TreeFolder) => {
         if (item.pathName.startsWith(folderPath)) {
           item.isExpand = true;
         }
@@ -109,7 +117,7 @@ export const FilesTree: React.FC = () => {
             </DragDropFileCointer>
           ) : (
             <FilesTreeContainer>
-              {filesTreeDisplay.map((item: FilesSystem) => {
+              {filesTreeDisplay.map((item: TreeFolder) => {
                 if (item.isFolder) {
                   return (
                     <FolderNode

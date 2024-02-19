@@ -13,15 +13,13 @@ function cloneDeepObject<T>(object: T): T {
   return JSON.parse(JSON.stringify(object)) as T;
 }
 
-const cloneFilesTree = (filesTreeInput: FilesSystem[]) => {
-  return cloneDeepObject(filesTreeInput);
-};
-
 const cloneFileSystem = (fileSystem: FilesSystem): FilesSystem => {
-  const fileSystemClone = cloneDeepObject(fileSystem);
+  let fileSystemClone: Partial<FilesSystem> = { ...fileSystem };
+  delete fileSystemClone.arrayBufferFile;
+  fileSystemClone = cloneDeepObject(fileSystemClone);
   return Object.assign(fileSystemClone, {
     arrayBufferFile: fileSystem.arrayBufferFile,
-  });
+  }) as FilesSystem;
 };
 
 const findCommonSubstring = (stringArray: string[]) => {
@@ -71,15 +69,14 @@ const checkisTextFile = (buffer: ArrayBuffer): boolean => {
 const getFileExtension = (fileName: string): string => {
   const fileExtension = fileName.split(".").pop();
   return fileExtension ?? "";
-}
+};
 
 export {
   getFileName,
-  cloneFilesTree,
   cloneFileSystem,
   cloneDeepObject,
   findCommonSubstring,
   checkPathNameIsRootFolder,
   checkisTextFile,
-  getFileExtension
+  getFileExtension,
 };

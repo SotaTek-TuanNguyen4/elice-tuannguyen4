@@ -31,3 +31,7 @@ Open the application in your browser at http://localhost:3000
   - Click file, then a new tab is opened and the file's content is displayed on the Monaco Editor.
 
 - Close the current opening file without saving will trigger the popup which askes to save the changes.
+
+### The issues which needs to improve in the future
+
+1. The file changes, without saving it before moving to other tabs, currently are not saved: When user inputs into the current opening file of the opening tab, and user clicks to other tab without saving the file changes, then the changes are not saved.

@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { FiFileText } from "react-icons/fi";
 import { useAppDispatch } from "@/store/hooks/useStoreHooks";
-import type { FilesSystem } from "@/types";
+import type { TreeFolder } from "@/types";
 import { openFile, updateFileFocus } from "@/store/filesSystem/filesSystemSlice";
 
 interface FileNodeProps {
-  fileSystem: FilesSystem;
+  fileSystem: TreeFolder;
 }
 
 export const FileNode: React.FC<FileNodeProps> = ({
@@ -17,7 +17,7 @@ export const FileNode: React.FC<FileNodeProps> = ({
 
   const handleOpenFile = () => {
     dispatch(updateFileFocus(fileSystem.pathName));
-    dispatch(openFile(fileSystem));
+    dispatch(openFile(fileSystem.pathName));
   };
 
   return (
