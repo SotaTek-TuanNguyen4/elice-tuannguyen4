@@ -8,6 +8,8 @@ import { FiX } from "react-icons/fi";
 import { changeFileActive } from "@/store/filesSystem/filesSystemSlice";
 import { EditorContext } from "@/contexts/EditorContext";
 import { ConfirmCloseFileModal } from "@/components/modal/ConfirmCloseFileModal";
+import { BinaryFileExtension } from "@/constants";
+import { getFileExtension } from "@/utils";
 
 interface OpenTabProps {
   file: FilesSystem;
@@ -33,6 +35,14 @@ export const OpenTab: React.FC<OpenTabProps> = ({ file }: OpenTabProps) => {
       dispatch(closeFile(filePath));
     } else {
       if (!editor) return;
+      const isBinaryFile = BinaryFileExtension.includes(
+        getFileExtension(file.fileName)
+      );
+      if (isBinaryFile) {
+        dispatch(closeFile(filePath));
+        event.stopPropagation();
+        return;
+      }
       const fileContent = editor.getValue();
       if (fileContent === file.contentText) {
         dispatch(closeFile(filePath));
