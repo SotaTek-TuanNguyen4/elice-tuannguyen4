@@ -17,8 +17,11 @@ const cloneFilesTree = (filesTreeInput: FilesSystem[]) => {
   return cloneDeepObject(filesTreeInput);
 };
 
-const cloneFileSystem = (fileSystem: FilesSystem) => {
-  return cloneDeepObject(fileSystem);
+const cloneFileSystem = (fileSystem: FilesSystem): FilesSystem => {
+  const fileSystemClone = cloneDeepObject(fileSystem);
+  return Object.assign(fileSystemClone, {
+    arrayBufferFile: fileSystem.arrayBufferFile,
+  });
 };
 
 const findCommonSubstring = (stringArray: string[]) => {
@@ -65,6 +68,11 @@ const checkisTextFile = (buffer: ArrayBuffer): boolean => {
   return true;
 };
 
+const getFileExtension = (fileName: string): string => {
+  const fileExtension = fileName.split(".").pop();
+  return fileExtension ?? "";
+}
+
 export {
   getFileName,
   cloneFilesTree,
@@ -72,5 +80,6 @@ export {
   cloneDeepObject,
   findCommonSubstring,
   checkPathNameIsRootFolder,
-  checkisTextFile
+  checkisTextFile,
+  getFileExtension
 };

@@ -2,17 +2,25 @@ import { useEffect, useRef, useMemo, useContext } from "react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/useStoreHooks";
-import { PreDefineLanguages } from "@/constants";
+import { BinaryFileExtension, PreDefineLanguages } from "@/constants";
 import { filesSystemSelectors } from "@/store/filesSystem/filesSystemSelector";
 import type { FilesSystem } from "@/types";
 import { updateFile } from "@/store/filesSystem/filesSystemSlice";
 import { EditorContext } from "@/contexts/EditorContext";
+import { getFileExtension } from "@/utils";
+import { ImageView } from "@/components/editor/ImageView";
 
 type LanguageExtention = keyof typeof PreDefineLanguages;
+enum FileType {
+  IMAGE = "image",
+  PLAIN_TEXT = "plainText",
+  NOT_READ = "notRead",
+}
 
 export const MonacoEditor: React.FC = () => {
   const { editor, setEditor } = useContext(EditorContext);
   const monacoEl = useRef(null);
+  const editorContainerEl = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const tabsOpened: FilesSystem[] = useAppSelector(
     filesSystemSelectors.selectTabsOpen
@@ -25,6 +33,16 @@ export const MonacoEditor: React.FC = () => {
       (file: FilesSystem) => file.pathName === filePathActive
     );
   }, [tabsOpened, filePathActive]);
+
+  const getFileType: FileType = useMemo(() => {
+    if (!fileOpened?.fileName) return FileType.PLAIN_TEXT;
+    const fileExtension = getFileExtension(fileOpened?.fileName);
+    if (!fileExtension) return FileType.NOT_READ;
+    if (BinaryFileExtension.includes(fileExtension)) {
+      return FileType.IMAGE;
+    }
+    return FileType.PLAIN_TEXT;
+  }, [fileOpened]);
 
   useEffect(() => {
     if (monacoEl) {
@@ -51,9 +69,9 @@ export const MonacoEditor: React.FC = () => {
   }, [monacoEl.current]);
 
   useEffect(() => {
-    if (fileOpened && editor) {
+    if (fileOpened && editor && getFileType === FileType.PLAIN_TEXT) {
       editor.setValue(fileOpened.contentText);
-      const fileExtension = fileOpened.fileName.split(".").pop();
+      const fileExtension = getFileExtension(fileOpened.fileName);
       const initLanguage =
         PreDefineLanguages[fileExtension as LanguageExtention] ??
         PreDefineLanguages["js"];
@@ -66,12 +84,39 @@ export const MonacoEditor: React.FC = () => {
     if (!fileOpened && editor) {
       editor.setValue("");
     }
-  }, [fileOpened]);
+  }, [getFileType, fileOpened]);
 
-  return <EditorContainer ref={monacoEl}></EditorContainer>;
+  return (
+    <Container ref={editorContainerEl}>
+      <EditorContainer
+        ref={monacoEl}
+        className={getFileType === FileType.PLAIN_TEXT ? "" : "hidden"}
+      ></EditorContainer>
+      ;
+      {getFileType === FileType.IMAGE && fileOpened && (
+        <ImageView
+          fileSystem={fileOpened}
+          width={editorContainerEl.current?.clientWidth}
+          height={editorContainerEl.current?.clientHeight}
+        />
+      )}
+    </Container>
+  );
 };
 
-const EditorContainer = styled.div`
+const Container = styled.div`
+  background-color: #1e1e1e;
+  position: relative;
+  flex: 1;
   width: 100%;
   height: 100%;
+`;
+
+const EditorContainer = styled.div`
+  height: calc(100% - 5px);
+  &.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+  }
 `;

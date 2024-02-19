@@ -127,6 +127,8 @@ export const filesSystemSlice = createSlice({
     ) => {
       state.files = action.payload.files;
       state.rootFolderName = action.payload.rootFolderName;
+      state.filePathActive = null;
+      state.fileTabs = [];
     },
     updateFile: (state, action: PayloadAction<string>) => {
       const currentActiveTabIndex = state.fileTabs.findIndex(
@@ -153,7 +155,9 @@ export const filesSystemSlice = createSlice({
         return;
       }
       state.fileTabs.push(cloneFileSystem(action.payload));
-      state.filePathActive = action.payload.pathName;
+      if (state.filePathActive !== action.payload.pathName) {
+        state.filePathActive = action.payload.pathName;
+      }
     },
     closeFile: (state, action: PayloadAction<string>) => {
       if (state.filePathActive === action.payload) {

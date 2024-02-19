@@ -16,7 +16,6 @@ const PreDefineLanguages = {
 };
 
 const BinaryFileExtension = [
-  "pdf",
   "png",
   "gif",
   "jpg",

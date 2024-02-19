@@ -1,7 +1,7 @@
 import JSZip from "jszip";
 import { FilesSystem } from "@/types";
 import * as FileSaver from "file-saver";
-import { getFileName, checkisTextFile } from "@/utils";
+import { getFileName, checkisTextFile, getFileExtension } from "@/utils";
 import { BinaryFileExtension } from "@/constants";
 
 export const useHandleZipFile = () => {
@@ -23,7 +23,7 @@ export const useHandleZipFile = () => {
           isBinary: file.dir
             ? false
             : !checkisTextFile(arrayBufferFile) &&
-              BinaryFileExtension.includes(fileName.split(".").pop() ?? ""),
+              BinaryFileExtension.includes(getFileExtension(fileName)),
           isFocus: false,
         }));
       });

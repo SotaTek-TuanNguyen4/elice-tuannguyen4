@@ -22,6 +22,7 @@ const OpeningTabsContainer = styled.div`
   display: block;
   width: 100%;
   height: 50px;
+  min-height: 50px;
   background-color: #181818;
   overflow: auto;
   white-space: nowrap;
